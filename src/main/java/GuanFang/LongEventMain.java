@@ -27,10 +27,11 @@ public class LongEventMain {
         // Construct the Disruptor
 //        Disruptor<LongEvent> disruptor = new Disruptor<>(factory, bufferSize, executor);
         Disruptor<LongEvent> disruptor = new Disruptor(
-                        factory, bufferSize, executor, ProducerType.SINGLE, new BlockingWaitStrategy());
+                factory, bufferSize, executor, ProducerType.SINGLE, new BlockingWaitStrategy());
 
         // Connect the handler
-        disruptor.handleEventsWith(new LongEventHandler());
+        //指定一个处理器在最后来清除数据
+        disruptor.handleEventsWith(new LongEventHandler()).then(new ClearingEventHandler());
 
         // Start the Disruptor, starts all threads running
         disruptor.start();
@@ -46,7 +47,7 @@ public class LongEventMain {
 
             bb.putLong(0, l);
             producer.onData(bb);
-//            Thread.sleep(1000);
+            Thread.sleep(1000);
         }
     }
 }
